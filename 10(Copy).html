@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>WG Cyberpunk Panel</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#05080f;
+  --panel:#0b1220;
+  --accent:#00ff9c;
+  --accent2:#00cfff;
+  --text:#e5e7eb;
+  --danger:#ff4d4d;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:'Orbitron',monospace;
+  background:
+    radial-gradient(circle at top,#0f172a,#020617),
+    repeating-linear-gradient(0deg,rgba(0,255,156,.04),rgba(0,255,156,.04) 1px,transparent 1px,transparent 3px);
+  color:var(--text);
+}
+.center{display:flex;align-items:center;
+justify-content:center;
+min-height:100vh;
+}
+#login, #loading{
+  position:fixed;
+  inset:0;
+  background:inherit;
+  z-index:10;
+}
+.card{
+  background:linear-gradient(145deg,#0b1220,#020617);
+  border:1px solid rgba(0,255,156,.25);
+  box-shadow:0 0 25px rgba(0,255,156,.15);
+  padding:24px;
+  border-radius:14px;
+  width:360px;
+}
+input,select,textarea{
+  width:100%;
+  background:#020617;
+  border:1px solid rgba(0,255,156,.35);
+  color:var(--text);
+  padding:10px;
+  border-radius:8px;
+  margin:6px 0;
+}
+input:focus,select:focus,textarea:focus{
+  outline:none;
+  box-shadow:0 0 12px var(--accent);
+}
+button{
+  width:100%;
+  padding:10px;
+  margin:6px 0;
+  border:none;
+  border-radius:8px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  color:#020617;
+  font-weight:600;
+  cursor:pointer;
+}
+button.danger{background:linear-gradient(90deg,#ff4d4d,#ff7a7a)}
+.error{color:var(--danger);text-align:center;margin-top:8px}
+.hidden{display:none}
+.small{width:90px}
+.neon-card{
+  background:linear-gradient(145deg,#0b1220,#020617);
+  border-left:4px solid var(--accent);
+  padding:14px;
+  border-radius:10px;
+  margin-bottom:14px;
+  box-shadow:0 0 18px rgba(0,255,156,.12);
+}
+header{
+  padding:16px;
+  text-align:center;
+  border-bottom:1px solid rgba(0,255,156,.2);
+  font-size:18px;
+  letter-spacing:2px;
+}
+.container{max-width:720px;margin:auto;padding:20px}
+.status{color:var(--accent)}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="login" class="center">
+  <div class="card">
+    <h3 style="text-align:center">LOGIN</h3>
+    <input id="username" placeholder="Username">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="doLogin()">ENTER</button>
+    <div id="error" class="error"></div>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div id="loading" class="center hidden" style="flex-direction:column">
+  <div class="loader"></div>
+  <p>CONNECTING TO PANEL...</p>
+</div>
+
+<!-- APP -->
+<div id="app">
+<header>WIREGUARD CYBERPUNK PANEL</header>
+
+<div class="container">
+
+<div class="neon-card">
+<b>Status:</b> <span class="status">CONNECTED</span><br>
+<b>Endpoint:</b> udp.pickvpn.com
+</div>
+
+<div class="neon-card">
+<label>Config Name</label>
+<input id="confName" placeholder="myconfig">
+
+<label>Country</label>
+<select id="country" onchange="onCountry()">
+<option value="">Select</option>
+<option value="3.0|2001:4">🇺🇸 آمریکا [United States]</option>
+<option value="5.56|2001:df0">🇩🇪 آلمان [Germany]</option>
+<option value="5.48|2a01:e0a">🇫🇷 فرانسه [France]</option>
+<option value="24.114|2607:fea8">🇨🇦 کانادا [Canada]</option>
+<option value="88.228|2a02:ff0">🇹🇷 ترکیه [Turkey]</option>
+<option value="41.41|2c0f:fc00">🇪🇬 مصر [Egypt]</option>
+<option value="103.4|2400:adc0">🇵🇰 پاکستان [Pakistan]</option>
+<option value="89.64|2a02:2788">🇵🇱 لهستان [Poland]</option>
+<option value="213.75|2a00:1ca0">🇳🇱 هلند [Netherlands]</option>
+<option value="79.136|2a02:168">🇸🇪 سوئد [Sweden]</option>
+<option value="84.208|2a00:801">🇳🇴 نروژ [Norway]</option>
+<option value="185.32|2a03:2880">🇦🇪 امارات [UAE]</option>
+</select>
+
+<div id="serviceBox" class="hidden">
+<label>DNS Service</label>
+<select id="service" onchange="onService()">
+<option value="">Select</option>
+<option value="178.22.122.100">𝑺𝒉𝒆𝒄𝒂𝒏 ᴘʀɪᴍᴀʀʏ</option>
+<option value="185.51.200.2">𝑺𝒉𝒆𝒄𝒂𝒏 sᴇᴄᴏɴᴅᴀʀʏ</option>
+<option value="185.55.226.26">𝑩𝒆𝒈𝒛𝒂𝒓 ᴘʀɪᴍᴀʀʏ</option>
+<option value="185.55.225.25">𝑩𝒆𝒈𝒛𝒂𝒓 sᴇᴄᴏɴᴅᴀʀʏ</option>
+<option value="8.8.8.8">𝑮𝒐𝒐𝒈𝒍𝒆 ᴘʀɪᴍᴀʀʏ</option>
+<option value="8.8.4.4">𝑮𝒐𝒐𝒈𝒍𝒆 sᴇᴄᴏɴᴅᴀʀʏ</option>
+<option value="1.1.1.1">𝑪𝒍𝒐𝒖𝒅𝒇𝒍𝒂𝒓𝒆 ᴘʀɪᴍᴀʀʏ</option>
+<option value="1.0.0.1">𝑪𝒍𝒐𝒖𝒅𝒇𝒍𝒂𝒓𝒆 sᴇᴄᴏɴᴅᴀʀʏ</option>
+</select>
+</div>
+
+<!-- ✅ ONLY ONE ipBox -->
+<div id="ipBox" class="hidden">
+<label><input type="checkbox" id="ipv4" checked onchange="toggleIP()"> IPv4</label>
+<input id="ipv4num" type="number" value="1" class="small">
+
+<label><input type="checkbox" id="ipv6" checked onchange="toggleIP()"> IPv6</label>
+<input id="ipv6num" type="number" value="2" class="small">
+</div>
+
+<!-- ✅ ONLY ONE extraBox -->
+<div id="extraBox" class="hidden">
+<label>MTU</label>
+<input id="mtu" type="number" placeholder="1440">
+
+<label>Listen Port</label>
+<input id="port" type="number" placeholder="2087">
+</div>
+
+<button id="buildBtn" class="hidden" onclick="buildConfig()">BUILD CONFIG</button>
+</div>
+
+<div id="outputBox" class="neon-card hidden">
+<label>Endpoint (Manual)</label>
+<input id="endpointInput" placeholder="udp.pickvpn.com:2087">
+<textarea id="configOutput" rows="10"></textarea>
+<button onclick="applyEndpoint()">Apply Endpoint</button>
+<button onclick="downloadConfig()">Download</button>
+<button onclick="copyConfig()">Copy</button>
+<button class="danger" onclick="resetPanel()">Reset</button>
+</div>
+
+</div>
+</div>
+
+<script>
+const users={KhodePicko:'1357096607',user2v:'660116',verka:'2021642'}
+
+function doLogin(){
+ if(users[username.value]===password.value){
+  login.classList.add('hidden')
+  loading.classList.remove('hidden')
+  setTimeout(()=>{
+    loading.classList.add('hidden')
+    app.style.display='block'
+  },2500)
+ } else error.innerText='INVALID LOGIN'
+}
+
+function onCountry(){serviceBox.classList.toggle('hidden',!country.value)}
+function onService(){
+ ipBox.classList.toggle('hidden',!service.value)
+ buildBtn.classList.toggle('hidden',!service.value)
+}
+function toggleIP(){
+ if(!ipv4.checked && !ipv6.checked) ipv4.checked=true
+ ipv4num.style.display=ipv4.checked?'inline-block':'none'
+ ipv6num.style.display=ipv6.checked?'inline-block':'none'
+}
+
+function r(n){return Math.floor(Math.random()*n)}
+function h(){return Math.floor(Math.random()*65535).toString(16)}
+function key(){const a=new Uint8Array(32);crypto.getRandomValues(a);return btoa(String.fromCharCode(...a))}
+
+function buildConfig(){
+ extraBox.classList.remove('hidden')
+ const [v4,v6]=country.value.split('|')
+ const mtuVal=mtu.value||1440
+ const portVal=port.value||2087
+
+ let dns=service.value
+ if(ipv4.checked) for(let i=0;i<ipv4num.value;i++) dns+=`, ${v4}.${r(256)}.${r(256)}`
+ if(ipv6.checked) for(let i=0;i<ipv6num.value;i++) dns+=`, ${v6}::${h()}:0:${h()}:34ee`
+
+ configOutput.value=
+`[Interface]
+PrivateKey = ${key()}
+Address = ${v4}.${r(256)}.${r(256)}/32, ${v6}::${h()}:0:4fee/128
+DNS = ${dns}
+MTU = ${mtuVal}
+ListenPort = ${portVal}
+
+[Peer]
+PublicKey = ${key()}
+PreSharedKey = ${key()}
+AllowedIPs = ${v4}.0.0/16, ${v6}::/64
+PersistentKeepalive = 25
+Endpoint = udp.pickvpn.com:${portVal}`
+
+ outputBox.classList.remove('hidden')
+}
+
+function applyEndpoint(){
+ if(endpointInput.value)
+  configOutput.value=configOutput.value.replace(/Endpoint = .*/,'Endpoint = '+endpointInput.value)
+}
+function downloadConfig(){
+ const a=document.createElement('a')
+ a.href=URL.createObjectURL(new Blob([configOutput.value],{type:'conf/plain'}))
+ a.download=(confName.value||'wg')+'.conf'
+ a.click()
+}
+function copyConfig(){
+ const ta=document.getElementById('configOutput')
+ ta.select()
+ document.execCommand('copy')
+ alert('کپی شد ✅')
+}
+function resetPanel(){location.reload()}
+</script>
+
+</body>
+</html>
